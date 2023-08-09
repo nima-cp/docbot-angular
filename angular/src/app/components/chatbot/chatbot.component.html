@@ -1,11 +1,11 @@
-<h3 class="title">This is the second chatBot</h3>
+<h3 class="title">This is the second chatBot!</h3>
 
-<div class="chatbot">
+<div class="chatbot-container">
   <div class="header">
-    <h4>Chatbot</h4>
+    <h4>DocBot</h4>
   </div>
 
-  <div class="messages">
+  <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="messages">
     <div *ngFor="let message of messages" class="user">
       {{ message }}
       <!-- class="{{ message.user ? 'user' : 'bot' }}" -->
