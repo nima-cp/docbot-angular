@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^16.1.0",
     "@angular/router": "^16.1.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
+    "axios": "^1.4.0",
     "deep-chat": "^1.0.0",
     "lit": "^2.8.0",
     "rxjs": "~7.8.0",

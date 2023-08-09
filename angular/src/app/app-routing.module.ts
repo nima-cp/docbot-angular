@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ChatbotComponent } from './chatbot/chatbot.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 
 const routes: Routes = [{ path: '', component: ChatbotComponent }];
 @NgModule({

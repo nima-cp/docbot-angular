@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ChatApiService } from 'src/app/services/chat-api.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -10,7 +10,7 @@ export class ChatbotComponent implements OnInit {
   messages: string[] = [];
   newMessage: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private ChatApiService: ChatApiService) {}
 
   ngOnInit() {
     this.messages.push('Welcome to the DocBot!');
@@ -22,11 +22,13 @@ export class ChatbotComponent implements OnInit {
     this.messages.push('User: ' + this.newMessage);
     console.log(this.messages);
 
-    this.http
-      .post<any>('http://127.0.0.1:8080/chatbot', { message: this.newMessage })
-      .subscribe((response) => {
-        this.messages.push('Chatbot: ' + response.response);
+    this.ChatApiService.getChatResponse(this.newMessage)
+      .then((response) => {
+        this.messages.push('Chatbot: ' + response.data.response);
         console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
       });
 
     this.newMessage = '';
