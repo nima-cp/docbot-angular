@@ -5,11 +5,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { FormsModule } from '@angular/forms';
-import { Chat2Component } from './chat2/chat2.component';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent, Chat2Component],
+  declarations: [AppComponent, ChatbotComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [HttpClientModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
