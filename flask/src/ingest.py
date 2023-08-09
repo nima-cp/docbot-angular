@@ -14,9 +14,14 @@ from langchain.vectorstores import Chroma
 # vectorStore.delete_collection()
 # vectorStore.persist()
 # %%
-filePath = "../docs"
+
+filePath = "c:\\Users\\Payoff\\Desktop\\chatbot\\docs"
 # Load and process the text files
-loader = DirectoryLoader(filePath, glob="./*.pdf", loader_cls=PyMuPDFLoader)
+loader = DirectoryLoader(
+    filePath,
+    glob="./*.pdf",
+    loader_cls=PyMuPDFLoader,
+)
 pages = loader.load_and_split()
 
 documents = loader.load()
@@ -66,7 +71,9 @@ embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 
 ### create the DB
 # Embed and store the docs
-persist_directory = "../db/vectorStore/chromadb"
+persist_directory = (
+    "c:\\Users\\Payoff\\Desktop\\chatbot\\flask\\db\\vectorStore\\chromadb"
+)
 
 # Supplying a persist_directory will store the embeddings on disk
 vectorStore = Chroma.from_documents(
@@ -89,4 +96,3 @@ vectorStore.persist()
 
 
 print("ingest is done")
-
