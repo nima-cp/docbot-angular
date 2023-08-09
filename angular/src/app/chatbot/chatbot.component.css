@@ -1,0 +1,9 @@
+div {
+  text-align: center;
+}
+
+deep-chat {
+  display: flex;
+  justify-content: center;
+  margin-top: 9rem;
+}
