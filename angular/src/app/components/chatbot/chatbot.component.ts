@@ -24,7 +24,7 @@ export class ChatbotComponent implements OnInit {
 
     this.ChatApiService.getChatResponse(this.newMessage)
       .then((response) => {
-        this.messages.push('Chatbot: ' + response.data.response);
+        this.messages.push('Chatbot: ' + response.data.result.answer);
         console.log(response);
       })
       .catch((error) => {

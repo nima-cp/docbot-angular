@@ -61,12 +61,12 @@ class DocBot:
             memory=self.memory,
             chain_type="stuff",
             return_source_documents=True,
-            return_generated_question=True,
+            # return_generated_question=True,
             combine_docs_chain_kwargs={"prompt": self.prompt},
             get_chat_history=lambda h: h,
         )
 
-    def get_response(self, question, chat_history=[]):
+    def get_response(self, question: str, chat_history=[]):
         with get_openai_callback() as cb:
             result = self.conversational_chain(
                 {"question": question, "chat_history": chat_history}
@@ -86,7 +86,11 @@ class DocBot:
         chat_history.append({"question": question, "answer": result["answer"]})
 
         response = {
-            "result": result,
+            "result": {
+                "question": question,
+                "answer": result["answer"],
+                "chat_history": result["chat_history"],
+            },
             "prompt": {
                 "prompt_tokens": cb.prompt_tokens,
                 "completion_tokens": cb.completion_tokens,
@@ -102,11 +106,14 @@ class DocBot:
 
 # agent = DocBot()
 
-# question = "cosa e invoice date della WORLD FUEL SERVICE SINGAPORE ?"
-# res, chat_history = agent.get_response(question)
-# print("res:   ", res)
+# quesftion = "cosa e invoice date della WORLD FUEL SERVICE SINGAPORE ?"
+# response, chat_history = agent.get_response(question)
+# print("response:   ", response)
 # print("chat_history:   ", chat_history)
-# print("answer:", res["result"]["answer"])
+# print("answer:", response["result"]["answer"])
+
+
+# %%
 
 
 # %%
