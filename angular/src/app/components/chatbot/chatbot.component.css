@@ -2,11 +2,17 @@
   text-align: center;
 }
 
+.container {
+  position: relative;
+}
+
 .chatbot-container {
   max-width: 600px;
   margin: 4rem auto;
   box-shadow: 3px 7px 13px 6px rgb(0 0 0 / 26%);
   border: 0.2px gray solid;
+
+  font-size: 1.1rem;
 }
 
 .header {
@@ -16,7 +22,7 @@
   letter-spacing: 2px;
   font-family: "Courier New", Courier, monospace;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
 .header h4 {
@@ -28,6 +34,9 @@
   overflow-y: scroll;
   overflow-x: hidden;
   padding: 10px;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .messages .user,
@@ -38,14 +47,22 @@
   width: 90%;
 }
 
-.user {
-  color: white;
-  background: #1969be;
-}
-
 .bot {
   background: #f1f0f0;
   color: #000;
+  text-align-last: left;
+
+  max-width: fit-content;
+  align-self: flex-start;
+}
+
+.user {
+  color: white;
+  background: #1969be;
+  text-align: right;
+  max-width: fit-content;
+
+  align-self: flex-end;
 }
 
 .input {
@@ -73,4 +90,21 @@ button {
 
 button:hover {
   cursor: pointer;
+}
+
+.prompt_table {
+  position: absolute;
+  top: 0;
+  left: 2%;
+
+  border: #000 solid 1px;
+  border-radius: 10px;
+}
+
+.prompt_table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  min-width: 2rem;
+  text-align: center;
 }

@@ -1,25 +1,52 @@
-<h3 class="title">This is the second chatBot!</h3>
+<h3 class="title">Questo e il secondo chatBot!</h3>
 
-<div class="chatbot-container">
-  <div class="header">
-    <h4>DocBot</h4>
-  </div>
+<div class="container">
+  <div class="chatbot-container">
+    <div class="header">
+      <h4>DocBot</h4>
+    </div>
 
-  <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="messages">
-    <div *ngFor="let message of messages" class="user">
-      {{ message }}
-      <!-- class="{{ message.user ? 'user' : 'bot' }}" -->
-      <!-- {{ message.text }} -->
+    <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="messages">
+      <div *ngFor="let message of messages.bot" class="bot">
+        {{ message }}
+        <!-- class="{{ message.user ? 'user' : 'bot' }}" -->
+        <!-- {{ message.text }} -->
+      </div>
+      <div *ngFor="let message of messages.user" class="user">
+        {{ message }}
+      </div>
+    </div>
+
+    <div class="input">
+      <input
+        type="text"
+        [(ngModel)]="new_message"
+        (keyup.enter)="send_message()"
+        placeholder="Cos'hai in mente?!"
+      />
+      <button (click)="send_message()">Invia</button>
     </div>
   </div>
 
-  <div class="input">
-    <input
-      type="text"
-      [(ngModel)]="newMessage"
-      (keyup.enter)="sendMessage()"
-      placeholder="Type a message..."
-    />
-    <button (click)="sendMessage()">Send</button>
-  </div>
+  <table class="prompt_table">
+    <tr>
+      <td>Completion Tokens</td>
+      <td>{{ prompt.completion_tokens || 0 }}</td>
+    </tr>
+
+    <tr>
+      <td>Prompt Tokens</td>
+      <td>{{ prompt.prompt_tokens || 0 }}</td>
+    </tr>
+
+    <tr>
+      <td>Total Tokens</td>
+      <td>{{ prompt.total_tokens || 0 }}</td>
+    </tr>
+
+    <tr>
+      <td>Total Cost (USD)</td>
+      <td>${{ prompt.total_cost || 0 }}</td>
+    </tr>
+  </table>
 </div>
