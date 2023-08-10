@@ -46,7 +46,7 @@ def chatbot():
         response = {"error": str(e)}
         return make_response(jsonify(response), 500)
 
-    return jsonify(response)
+    return jsonify({"response": response, "chat_history": chat_history})
 
 
 # ------------------ START SERVER ------------------
