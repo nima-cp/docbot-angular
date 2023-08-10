@@ -6,13 +6,17 @@
       <h4>DocBot</h4>
     </div>
 
-    <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="messages">
-      <div *ngFor="let msg of messages.bot" class="bot">
+    <div
+      #scrollMe
+      [scrollTop]="scrollMe.scrollHeight"
+      class="messages_container"
+    >
+      <span
+        [ngClass]="msg.from === 'bot' ? 'message bot' : 'message user'"
+        *ngFor="let msg of getSortedMessages()"
+      >
         {{ msg.message }}
-      </div>
-      <div *ngFor="let msg of messages.user" class="user">
-        {{ msg.message }}
-      </div>
+      </span>
     </div>
 
     <div class="input">

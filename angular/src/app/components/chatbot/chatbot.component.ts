@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ChatApiService } from 'src/app/services/chat-api.service';
 import { v4 as uuidv4 } from 'uuid';
 
-interface Message {
-  id?: string;
-  message?: string;
-}
-
 interface Messages {
-  bot: Message[];
-  user: Message[];
+  id?: string;
+  from?: 'user' | 'bot';
+  message?: string;
+  date?: Date;
+}
+interface Chat {
+  sessionId: number;
+  messages?: Messages[];
 }
 
 interface Prompt {
@@ -25,10 +26,6 @@ interface Prompt {
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent implements OnInit {
-  messages: Messages = {
-    bot: [],
-    user: [],
-  };
   new_message: string = '';
   chat_history: [] = [];
   answer?: string;
@@ -39,31 +36,61 @@ export class ChatbotComponent implements OnInit {
     total_cost: 0,
   };
 
+  chat: Chat = {
+    sessionId: 1,
+    messages: [],
+  };
   constructor(private ChatApiService: ChatApiService) {}
 
   ngOnInit() {
-    this.messages.bot.push({ id: uuidv4(), message: 'Benvenuto in DocBot!' });
-    this.messages.bot.push({ id: uuidv4(), message: 'Come posso aiutarti?' });
-    console.log('conversation', this.messages);
+    this.chat.messages?.push({
+      id: uuidv4(),
+      from: 'bot',
+      message: 'Benvenuto in DocBot!',
+      date: new Date(),
+    });
+    this.chat.messages?.push({
+      id: uuidv4(),
+      from: 'bot',
+      message: 'Come posso aiutarti?',
+      date: new Date(),
+    });
+  }
+
+  // Sort messages by date
+  getSortedMessages() {
+    return this.chat.messages?.sort((a, b) => {
+      const ad = a as { date: Date };
+      const bd = b as { date: Date };
+      return ad.date.getTime() - bd.date.getTime();
+    });
   }
 
   send_message() {
     if (this.new_message.trim() === '') return;
 
-    this.messages.user.push({ id: uuidv4(), message: this.new_message });
+    this.chat.messages?.push({
+      id: uuidv4(),
+      from: 'user',
+      message: this.new_message,
+      date: new Date(),
+    });
 
     this.ChatApiService.getChatResponse(this.new_message)
       .then((response) => {
         this.chat_history = response.data.chat_history;
         this.answer = response.data.response.result.answer;
-        this.messages.bot.push({
+
+        this.chat.messages?.push({
           id: uuidv4(),
+          from: 'bot',
           message: this.answer,
+          date: new Date(),
         });
 
         this.prompt = response.data.response.prompt;
 
-        console.log('conversation', this.messages);
+        console.log('conversation', this.chat?.messages);
         console.log('chat_history', this.chat_history);
         console.log('prompt', this.prompt);
         console.log(response);
