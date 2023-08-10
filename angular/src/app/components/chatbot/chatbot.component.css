@@ -83,7 +83,7 @@ input[type="text"] {
   outline: none;
 }
 
-button {
+button.send_message {
   padding: 14px 30px;
   border-radius: 25px;
   border: none;
@@ -123,4 +123,25 @@ button:hover {
   table {
     margin-top: 2rem;
   }
+}
+
+button.new_chat {
+  padding: 11px 25px;
+  margin: 2rem 0.5rem 0;
+  background-color: #fff;
+  color: #1b4ab9;
+  border: 2px solid #1b4ab9;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+button.restartDB {
+  padding: 11px 25px;
+  margin: 2rem 0.5rem 0;
+  background-color: #ccc;
+  color: #333;
+  border: 1px solid #aaa;
+  border-radius: 25px;
+  font-weight: bold;
 }

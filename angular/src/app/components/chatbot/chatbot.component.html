@@ -22,7 +22,7 @@
         (keyup.enter)="send_message()"
         placeholder="Cos'hai in mente?!"
       />
-      <button (click)="send_message()">Invia</button>
+      <button class="send_message" (click)="send_message()">Invia</button>
     </div>
   </div>
 
@@ -44,7 +44,11 @@
 
     <tr>
       <td>Total Cost (USD)</td>
-      <td>${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}</td>
+      <td>
+        ${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}
+      </td>
     </tr>
   </table>
 </div>
+<button class="new_chat" (click)="new_chat()">New chat</button>
+<button class="restartDB" (click)="restartDB()">Restart DB</button>

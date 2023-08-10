@@ -74,4 +74,13 @@ export class ChatbotComponent implements OnInit {
 
     this.new_message = '';
   }
+
+  restartDB() {
+    console.log('DB Restarted!');
+    // this.ChatApiService.restartDB(() => {
+    // });
+  }
+  new_chat() {
+    console.log('new chat!');
+  }
 }
