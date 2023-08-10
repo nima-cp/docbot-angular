@@ -7,13 +7,11 @@
     </div>
 
     <div #scrollMe [scrollTop]="scrollMe.scrollHeight" class="messages">
-      <div *ngFor="let message of messages.bot" class="bot">
-        {{ message }}
-        <!-- class="{{ message.user ? 'user' : 'bot' }}" -->
-        <!-- {{ message.text }} -->
+      <div *ngFor="let msg of messages.bot" class="bot">
+        {{ msg.message }}
       </div>
-      <div *ngFor="let message of messages.user" class="user">
-        {{ message }}
+      <div *ngFor="let msg of messages.user" class="user">
+        {{ msg.message }}
       </div>
     </div>
 
@@ -31,22 +29,22 @@
   <table class="prompt_table">
     <tr>
       <td>Completion Tokens</td>
-      <td>{{ prompt.completion_tokens || 0 }}</td>
+      <td>{{ prompt.completion_tokens }}</td>
     </tr>
 
     <tr>
       <td>Prompt Tokens</td>
-      <td>{{ prompt.prompt_tokens || 0 }}</td>
+      <td>{{ prompt.prompt_tokens }}</td>
     </tr>
 
     <tr>
       <td>Total Tokens</td>
-      <td>{{ prompt.total_tokens || 0 }}</td>
+      <td>{{ prompt.total_tokens }}</td>
     </tr>
 
     <tr>
       <td>Total Cost (USD)</td>
-      <td>${{ prompt.total_cost || 0 }}</td>
+      <td>${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}</td>
     </tr>
   </table>
 </div>
