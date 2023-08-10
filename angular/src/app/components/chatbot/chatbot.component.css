@@ -3,12 +3,16 @@
 }
 
 .container {
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4rem;
 }
 
 .chatbot-container {
-  max-width: 600px;
-  margin: 4rem auto;
+  max-width: 700px;
+  width: 50%;
+  min-width: 450px;
+  margin: 0 auto;
   box-shadow: 3px 7px 13px 6px rgb(0 0 0 / 26%);
   border: 0.2px gray solid;
 
@@ -93,9 +97,9 @@ button:hover {
 }
 
 .prompt_table {
-  position: absolute;
-  top: 0;
-  left: 2%;
+  width: clamp(230px, 20vw, 350px);
+  height: 150px;
+  margin-right: 2rem;
 
   border: #000 solid 1px;
   border-radius: 10px;
@@ -107,4 +111,16 @@ button:hover {
   border-radius: 10px;
   min-width: 2rem;
   text-align: center;
+}
+
+/* Responsive table on small screens */
+
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+  table {
+    margin-top: 2rem;
+  }
 }
