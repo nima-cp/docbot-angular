@@ -9,9 +9,9 @@ export class ChatApiService {
   private API_URL = environment.API_URL;
 
   constructor() {}
-  getChatResponse(message: any) {
+  getChatResponse(message: string, id?: string) {
     return axios.post(`${this.API_URL}/chatbot`, {
-      session_id: 1,
+      chat_id: id,
       message: message,
     });
   }

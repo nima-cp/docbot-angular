@@ -44,6 +44,8 @@ export class ChatbotComponent implements OnInit {
     total_cost: 0,
   };
 
+  chat_id?: string;
+
   constructor(private ChatApiService: ChatApiService) {}
 
   ngOnInit() {
@@ -80,7 +82,7 @@ export class ChatbotComponent implements OnInit {
       date: new Date(),
     });
 
-    this.ChatApiService.getChatResponse(this.new_message)
+    this.ChatApiService.getChatResponse(this.new_message, this.chat_id)
       .then((response) => {
         this.chat_history = response.data.chat_history;
         this.answer = response.data.response.result.answer;
@@ -93,10 +95,9 @@ export class ChatbotComponent implements OnInit {
         });
 
         this.prompt = response.data.response.prompt;
+        this.chat_id = response.data.chat_id;
 
-        console.log('conversation', this.chat?.messages);
         console.log('chat_history', this.chat_history);
-        console.log('prompt', this.prompt);
         console.log(response);
       })
       .catch((error) => {
@@ -113,10 +114,11 @@ export class ChatbotComponent implements OnInit {
   }
   new_chat() {
     axios.get(`${this.API_URL}/new_chat`, {}).then((response) => {
-      const new_chat_id = response.data;
+      const new_chat_id = response.data.chat_id;
       console.log(response);
       console.log(response.headers);
       console.log(response.headers['chat_id']);
+      console.log(response.headers['email']);
       this.chat.messages = [];
     });
   }
