@@ -1,19 +1,19 @@
 from requests.exceptions import ConnectionError
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, session, redirect, url_for
+import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 import sys
+from datetime import timedelta
+import uuid
 
-sys.path.insert(1, "./src")
-
-from src.chain import DocBot
-
-agent = DocBot()
 # ------------------ SETUP ------------------
 load_dotenv()
 app = Flask(__name__)
 # this will need to be reconfigured before taking the app to production
 cors = CORS(app)
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.permanent_session_lifetime = timedelta(days=10)
 
 
 # ------------------ EXCEPTION HANDLERS ------------------
@@ -34,10 +34,21 @@ def handle_exception(e):
 # ------------------ ROUTES ------------------
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
-    data = request.get_json()  # Get the message from the request
-    question = data.get("message")  # Extract the message from the JSON data
-
     try:
+        data = request.get_json()  # Get the message from the request
+        question = data.get("message")  # Extract the message from the JSON data
+
+        chat_id = data.get("chat_id")  # Extract the session id
+
+        if chat_id is None:
+            if "chat_id" not in session:
+                new_chat()
+                chat_id = session["chat_id"]
+
+        sys.path.insert(1, "./src")
+        from src.chain import DocBot
+
+        agent = DocBot()
         response, chat_history = agent.get_response(question)
         print("\n\n\n res  ", response)
         print("\n\n\nchat_history  ", chat_history)
@@ -46,17 +57,8 @@ def chatbot():
         response = {"error": str(e)}
         return make_response(jsonify(response), 500)
 
-    return jsonify({"response": response, "chat_history": chat_history})
-
-
-@app.route("/sessions", methods=["POST"])
-def sessions():
-    data = request.get_json()
-    message = data.get("message")
-    session_id = data.get("session_id")
-    print(message, session_id)
     return jsonify(
-        {"status": "messages received", "message": message, "session_id": session_id}
+        {"chat_id": chat_id, "response": response, "chat_history": chat_history}
     )
 
 
