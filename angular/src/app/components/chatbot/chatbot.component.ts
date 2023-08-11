@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import axios from 'axios';
 import { ChatApiService } from 'src/app/services/chat-api.service';
 import { v4 as uuidv4 } from 'uuid';
+import { environment } from '../../environments/environment';
 
 interface Messages {
   id?: string;
@@ -27,6 +28,12 @@ interface Prompt {
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent implements OnInit {
+  private API_URL = environment.API_URL;
+
+  chat: Chat = {
+    sessionId: 1,
+    messages: [],
+  };
   new_message: string = '';
   chat_history: [] = [];
   answer?: string;
@@ -37,10 +44,6 @@ export class ChatbotComponent implements OnInit {
     total_cost: 0,
   };
 
-  chat: Chat = {
-    sessionId: 1,
-    messages: [],
-  };
   constructor(private ChatApiService: ChatApiService) {}
 
   ngOnInit() {
@@ -109,13 +112,12 @@ export class ChatbotComponent implements OnInit {
     // });
   }
   new_chat() {
-    axios
-      .post('http://127.0.0.1:8080/sessions', {
-        session_id: 1,
-        message: 'hi',
-      })
-      .then((response) => {
-        console.log(response);
-      });
+    axios.get(`${this.API_URL}/new_chat`, {}).then((response) => {
+      const new_chat_id = response.data;
+      console.log(response);
+      console.log(response.headers);
+      console.log(response.headers['chat_id']);
+      this.chat.messages = [];
+    });
   }
 }
