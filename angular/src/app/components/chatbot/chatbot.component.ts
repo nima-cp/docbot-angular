@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import axios from 'axios';
 import { ChatApiService } from 'src/app/services/chat-api.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -108,6 +109,13 @@ export class ChatbotComponent implements OnInit {
     // });
   }
   new_chat() {
-    console.log('new chat!');
+    axios
+      .post('http://127.0.0.1:8080/sessions', {
+        session_id: 1,
+        message: 'hi',
+      })
+      .then((response) => {
+        console.log(response);
+      });
   }
 }

@@ -8,6 +8,7 @@ export class ChatApiService {
   constructor() {}
   getChatResponse(message: any) {
     return axios.post('http://127.0.0.1:8080/chatbot', {
+      session_id: 1,
       message: message,
     });
   }

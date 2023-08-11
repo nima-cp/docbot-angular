@@ -49,6 +49,17 @@ def chatbot():
     return jsonify({"response": response, "chat_history": chat_history})
 
 
+@app.route("/sessions", methods=["POST"])
+def sessions():
+    data = request.get_json()
+    message = data.get("message")
+    session_id = data.get("session_id")
+    print(message, session_id)
+    return jsonify(
+        {"status": "messages received", "message": message, "session_id": session_id}
+    )
+
+
 # ------------------ START SERVER ------------------
 
 if __name__ == "__main__":
