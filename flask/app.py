@@ -34,19 +34,19 @@ def handle_exception(e):
 # ------------------ ROUTES ------------------
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
+    sys.path.insert(1, "./src")
+    from src.chain import DocBot
+
     try:
         data = request.get_json()  # Get the message from the request
         question = data.get("message")  # Extract the message from the JSON data
-
         chat_id = data.get("chat_id")  # Extract the session id
 
         if chat_id is None:
             if "chat_id" not in session:
                 chat_id = str(uuid.uuid4())
                 session["chat_id"] = chat_id
-
-        sys.path.insert(1, "./src")
-        from src.chain import DocBot
+                session.permanent = True
 
         agent = DocBot()
         response, chat_history = agent.get_response(question)
