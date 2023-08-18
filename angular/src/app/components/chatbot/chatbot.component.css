@@ -91,6 +91,7 @@ button.send_message {
 
 button:hover {
   cursor: pointer;
+  opacity: 0.9;
 }
 
 .prompt_table {
@@ -131,6 +132,7 @@ button.new_chat {
   border-radius: 25px;
   font-size: 0.9rem;
   font-weight: bold;
+  cursor: pointer;
 }
 
 button.restartDB {
@@ -141,4 +143,35 @@ button.restartDB {
   border: 1px solid #aaa;
   border-radius: 25px;
   font-weight: bold;
+  cursor: pointer;
+}
+
+.chat-histories {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 1rem;
+  width: 80%;
+
+  border: 1.8px solid #1b4ab9;
+  border-radius: 5px;
+}
+
+div.chat-title {
+  width: 100%;
+  padding: 0.41rem 0rem;
+  background-color: rgb(239, 239, 239);
+  color: #1b4ab9;
+
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+}
+
+div.chat-title:hover {
+  background: hsl(222, 75%, 58%);
+  color: white;
+
+  opacity: 0.9;
 }

@@ -10,8 +10,9 @@ interface Messages {
   message?: string;
   date?: Date;
 }
-interface Chat {
-  sessionId: number;
+interface Chats {
+  chat_id: number;
+  title?: string;
   messages?: Messages[];
 }
 
@@ -30,74 +31,54 @@ interface Prompt {
 export class ChatbotComponent implements OnInit {
   private API_URL = environment.API_URL;
 
-  chat: Chat = {
-    sessionId: 1,
-    messages: [],
-  };
+  chats?: Chats[];
   new_message: string = '';
   chat_history: [] = [];
-  answer?: string;
   prompt: Prompt = {
     completion_tokens: 0,
     prompt_tokens: 0,
     total_tokens: 0,
     total_cost: 0,
   };
-
-  chat_id?: string;
+  selected_chat: number = 1;
 
   constructor(private ChatApiService: ChatApiService) {}
 
   ngOnInit() {
-    this.chat.messages?.push({
-      id: uuidv4(),
-      from: 'bot',
-      message: 'Benvenuto in DocBot!',
-      date: new Date(),
+    this.ChatApiService.loadChatHistory().then((response) => {
+      this.chats = response.data.chats;
+      // this.selected_chat = this.chats[this.selected_chat].chat_id;
     });
-    this.chat.messages?.push({
-      id: uuidv4(),
-      from: 'bot',
-      message: 'Come posso aiutarti?',
-      date: new Date(),
-    });
-  }
 
-  // Sort messages by date
-  getSortedMessages() {
-    return this.chat.messages?.sort((a, b) => {
-      const ad = a as { date: Date };
-      const bd = b as { date: Date };
-      return ad.date.getTime() - bd.date.getTime();
-    });
+    // this.chat.messages?.push({
+    //   id: uuidv4(),
+    //   from: 'bot',
+    //   message: 'Benvenuto in DocBot!',
+    //   date: new Date(),
+    // });
+    // this.chat.messages?.push({
+    //   id: uuidv4(),
+    //   from: 'bot',
+    //   message: 'Come posso aiutarti?',
+    //   date: new Date(),
+    // });
   }
 
   send_message() {
     if (this.new_message.trim() === '') return;
 
-    this.chat.messages?.push({
-      id: uuidv4(),
-      from: 'user',
-      message: this.new_message,
-      date: new Date(),
-    });
-
-    this.ChatApiService.getChatResponse(this.new_message, this.chat_id)
+    this.ChatApiService.getChatResponse(this.new_message)
       .then((response) => {
-        this.chat_history = response.data.chat_history;
-        this.answer = response.data.response.result.answer;
+        // this.chat_history = response.data.chat_history;
 
-        this.chat.messages?.push({
-          id: uuidv4(),
-          from: 'bot',
-          message: this.answer,
-          date: new Date(),
-        });
+        this.scrollToBottom();
 
-        this.prompt = response.data.response.prompt;
-        this.chat_id = response.data.chat_id;
+        // this.chat.messages = response.data.chat_history;
 
-        console.log('chat_history', this.chat_history);
+        // this.prompt = response.data.response.prompt;
+        // this.chat.chat_id = response.data.chat_id;
+        //
+        // console.log('chat_history', this.chat_history);
         console.log(response);
       })
       .catch((error) => {
@@ -107,19 +88,28 @@ export class ChatbotComponent implements OnInit {
     this.new_message = '';
   }
 
+  scrollToBottom() {
+    let chatContainer = document.getElementById('messages_container');
+    chatContainer!.scrollTop = chatContainer!.scrollHeight;
+  }
+
   restartDB() {
     console.log('DB Restarted!');
-    // this.ChatApiService.restartDB(() => {
-    // });
+    // this.ChatApiService.restartDB()
   }
+
   new_chat() {
-    axios.get(`${this.API_URL}/new_chat`, {}).then((response) => {
-      const new_chat_id = response.data.chat_id;
-      console.log(response);
-      console.log(response.headers);
-      console.log(response.headers['chat_id']);
-      console.log(response.headers['email']);
-      this.chat.messages = [];
+    axios.get(`${this.API_URL}/load_chats`).then((response) => {
+      // const new_chat_id = response.data.chat_id;
+      // console.log(response.data.chats);
+      console.log(this.chats);
+
+      // this.chat.messages = [];
     });
+  }
+
+  change_chat(chat_id: number) {
+    this.selected_chat = chat_id - 1;
+    console.log(chat_id);
   }
 }

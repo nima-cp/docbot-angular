@@ -2,7 +2,6 @@ from requests.exceptions import ConnectionError
 from flask import Flask, request, jsonify, make_response, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
-import json
 from sqlalchemy.orm.attributes import flag_modified
 import os
 from dotenv import load_dotenv
@@ -137,44 +136,25 @@ def chatbot_test():
         # db.session.query(Chat_test1).where(id == chat_id).update({"title": 33})
 
         if existing_chat:
-            # 1
             messages = existing_chat.chat_history
-            # messages = json.loads(json.dumps(messages))
-            # messages.extend([user_question, bot_response])
-
-            # messages = json.loads(json.dumps(messages))
-            # existing_chat.chat_history = messages
-
-            #### 2
             messages.extend([user_question, bot_response])
             flag_modified(existing_chat, "chat_history")
 
             db.session.commit()
 
-        # messages = existing_chat.chat_history
-
-        # # messages.extend([user_question, bot_response])
-        # # updated_messages = (
-        # #     messages[:],
-        # #     {
-        # #         "from": "user",
-        # #         "message": question,
-        # #     },
-        # # )
-
-        # # messages = messages.append(user_question)
-        # messages = [{"from": "bot", "message": "1"}, {"from": "user", "message": "2"}]
-
-        # # now let's update the db
-        # existing_chat.chat_history = {}
-        # existing_chat.chat_history = messages
-
-        # flag_modified(Chat_test1, existing_chat.chat_history)
-        # session.add(Chat_test1)
-
-    # cache.set(chat_id, chat)
-
     return jsonify({"chat_id": chat_id, "response": response, "chat_history": messages})
+
+
+@app.route("/load_chats")
+def load_chats():
+    all_chats = Chat_test1.query.all()
+    chats = []
+    for chat in all_chats:
+        chats.append(
+            {"chat_id": chat.id, "title": chat.title, "messages": chat.chat_history}
+        )
+
+    return jsonify({"chats": chats})
 
 
 with app.app_context():

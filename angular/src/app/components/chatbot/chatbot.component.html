@@ -6,16 +6,12 @@
       <h4>DocBot</h4>
     </div>
 
-    <div
-      #scrollMe
-      [scrollTop]="scrollMe.scrollHeight"
-      class="messages_container"
-    >
+    <div class="messages_container" id="messages_container">
       <span
-        [ngClass]="msg.from === 'bot' ? 'message bot' : 'message user'"
-        *ngFor="let msg of getSortedMessages()"
+        *ngFor="let chat of chats && chats[selected_chat]?.messages"
+        [ngClass]="chat.from === 'bot' ? 'message bot' : 'message user'"
       >
-        {{ msg.message }}
+        {{ chat.message }}
       </span>
     </div>
 
@@ -30,29 +26,41 @@
     </div>
   </div>
 
-  <table class="prompt_table">
-    <tr>
-      <td>Completion Tokens</td>
-      <td>{{ prompt.completion_tokens }}</td>
-    </tr>
+  <div>
+    <table class="prompt_table">
+      <tr>
+        <td>Completion Tokens</td>
+        <td>{{ prompt.completion_tokens }}</td>
+      </tr>
 
-    <tr>
-      <td>Prompt Tokens</td>
-      <td>{{ prompt.prompt_tokens }}</td>
-    </tr>
+      <tr>
+        <td>Prompt Tokens</td>
+        <td>{{ prompt.prompt_tokens }}</td>
+      </tr>
 
-    <tr>
-      <td>Total Tokens</td>
-      <td>{{ prompt.total_tokens }}</td>
-    </tr>
+      <tr>
+        <td>Total Tokens</td>
+        <td>{{ prompt.total_tokens }}</td>
+      </tr>
 
-    <tr>
-      <td>Total Cost (USD)</td>
-      <td>
-        ${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}
-      </td>
-    </tr>
-  </table>
+      <tr>
+        <td>Total Cost (USD)</td>
+        <td>
+          ${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}
+        </td>
+      </tr>
+    </table>
+
+    <div class="chat-histories">
+      <div
+        *ngFor="let chat of chats"
+        class="chat-title"
+        (click)="change_chat(chat.chat_id)"
+      >
+        {{ chat.title }}
+      </div>
+    </div>
+  </div>
 </div>
 <button class="new_chat" (click)="new_chat()">New chat</button>
 <button class="restartDB" (click)="restartDB()">Restart DB</button>
