@@ -1,19 +1,28 @@
 from requests.exceptions import ConnectionError
 from flask import Flask, request, jsonify, make_response, session, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import JSONB
+import json
+from sqlalchemy.orm.attributes import flag_modified
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 import sys
-from datetime import timedelta
+from datetime import timedelta, datetime
 import uuid
+
 
 # ------------------ SETUP ------------------
 load_dotenv()
 app = Flask(__name__)
-# this will need to be reconfigured before taking the app to production
 cors = CORS(app)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.permanent_session_lifetime = timedelta(days=10)
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("POSTGRES_URL")
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
 
 
 # ------------------ EXCEPTION HANDLERS ------------------
@@ -61,6 +70,115 @@ def chatbot():
         {"chat_id": chat_id, "response": response, "chat_history": chat_history}
     )
 
+
+@app.route("/new_chat")
+def new_chat():
+    chat_id = str(uuid.uuid4())
+
+    session["chat_id"] = chat_id
+
+    email = request.json["email"]
+
+    response = make_response()
+
+    response.headers["chat_id"] = chat_id
+    response.headers["email"] = email
+
+    return response
+
+
+def create_message(sender, message):
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return {
+        "id": str(uuid.uuid4()),
+        "from": sender,
+        "message": message,
+        "date": current_datetime,
+    }
+
+
+class Chat_test1(db.Model):
+    __tablename__ = "Chat_test1"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=False, nullable=True)
+    chat_history = db.Column(JSONB)
+
+    def __init__(self, title, chat_history):
+        self.title = title
+        self.chat_history = chat_history
+
+
+@app.route("/chatbot_test", methods=["POST"])
+def chatbot_test():
+    data = request.get_json()
+    question = data.get("question")
+    title = question  # for now title is the first user message
+    chat_id = data.get("chat_id")
+
+    # for testing purposes
+    response = question
+    user_question = create_message("user", question)
+    bot_response = create_message("bot", response)
+
+    if chat_id is None:
+        if "chat_id" not in session:
+            messages = [user_question, bot_response]
+            new_row = Chat_test1(title=title, chat_history=messages)
+            db.session.add(new_row)
+            db.session.commit()
+            print("chat added successfully")
+
+            chat_id = new_row.id
+            session["chat_id"] = chat_id
+            session.permanent = True
+    else:
+        existing_chat = Chat_test1.query.filter_by(id=chat_id).first()
+        # existing_chat = db.session.get(Chat_test1, {"id": chat_id})
+        # db.session.query(Chat_test1).where(id == chat_id).update({"title": 33})
+
+        if existing_chat:
+            # 1
+            messages = existing_chat.chat_history
+            # messages = json.loads(json.dumps(messages))
+            # messages.extend([user_question, bot_response])
+
+            # messages = json.loads(json.dumps(messages))
+            # existing_chat.chat_history = messages
+
+            #### 2
+            messages.extend([user_question, bot_response])
+            flag_modified(existing_chat, "chat_history")
+
+            db.session.commit()
+
+        # messages = existing_chat.chat_history
+
+        # # messages.extend([user_question, bot_response])
+        # # updated_messages = (
+        # #     messages[:],
+        # #     {
+        # #         "from": "user",
+        # #         "message": question,
+        # #     },
+        # # )
+
+        # # messages = messages.append(user_question)
+        # messages = [{"from": "bot", "message": "1"}, {"from": "user", "message": "2"}]
+
+        # # now let's update the db
+        # existing_chat.chat_history = {}
+        # existing_chat.chat_history = messages
+
+        # flag_modified(Chat_test1, existing_chat.chat_history)
+        # session.add(Chat_test1)
+
+    # cache.set(chat_id, chat)
+
+    return jsonify({"chat_id": chat_id, "response": response, "chat_history": messages})
+
+
+with app.app_context():
+    db.create_all()
 
 # ------------------ START SERVER ------------------
 
