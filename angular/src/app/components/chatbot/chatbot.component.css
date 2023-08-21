@@ -4,6 +4,7 @@
 
 .container {
   display: flex;
+  flex-direction: row-reverse;
   justify-content: space-between;
   margin-top: 4rem;
 }
@@ -97,7 +98,7 @@ button:hover {
 .prompt_table {
   width: clamp(230px, 20vw, 350px);
   height: 150px;
-  margin-right: 2rem;
+  margin-left: 2rem;
 
   border: #000 solid 1px;
   border-radius: 10px;
@@ -151,14 +152,18 @@ button.restartDB {
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  margin-top: 1rem;
+  margin: 1rem 0 2rem 2rem;
   width: 80%;
+  max-width: 350px;
+  max-height: 450px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 
   border: 1.8px solid #1b4ab9;
   border-radius: 5px;
 }
 
-div.chat-title {
+.chat-histories .chat-title {
   width: 100%;
   padding: 0.41rem 0rem;
   background-color: rgb(239, 239, 239);
@@ -167,11 +172,21 @@ div.chat-title {
   cursor: pointer;
   font-weight: bold;
   text-align: center;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+  transition: all ease-in-out 0.3s;
 }
 
-div.chat-title:hover {
+.chat-histories .chat-title:hover {
   background: hsl(222, 75%, 58%);
   color: white;
+  cursor: pointer;
+  transition: all ease-in-out 0.3s;
+  border-radius: 20px;
+}
 
-  opacity: 0.9;
+.chat-histories .selected-chat {
+  color: white;
+  background: hsl(222, 79%, 51%);
+  transform: scale(1.05);
 }

@@ -27,6 +27,17 @@
   </div>
 
   <div>
+    <div class="chat-histories">
+      <div
+        *ngFor="let chat of sort_chats_by_latest_messages(chats)"
+        class="chat-title"
+        [ngClass]="{ 'selected-chat': chat.chat_id === selected_chat?.chat_id }"
+        (click)="change_chat(chat.chat_id)"
+      >
+        {{ chat.title }}
+      </div>
+    </div>
+
     <table class="prompt_table">
       <tr>
         <td>Completion Tokens</td>
@@ -50,16 +61,6 @@
         </td>
       </tr>
     </table>
-
-    <div class="chat-histories">
-      <div
-        *ngFor="let chat of sort_chats_by_latest_messages(chats)"
-        class="chat-title"
-        (click)="change_chat(chat.chat_id)"
-      >
-        {{ chat.title }}
-      </div>
-    </div>
   </div>
 </div>
 <button class="new_chat" (click)="new_chat()">New chat</button>
