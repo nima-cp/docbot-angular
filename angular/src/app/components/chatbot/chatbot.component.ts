@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import axios from 'axios';
 import { ChatApiService } from 'src/app/services/chat-api.service';
 import { v4 as uuidv4 } from 'uuid';
 import { environment } from '../../environments/environment';
@@ -11,7 +10,7 @@ interface Messages {
   date?: Date;
 }
 interface Chats {
-  chat_id: number;
+  chat_id: number | undefined;
   title?: string;
   messages?: Messages[];
 }
@@ -31,7 +30,7 @@ interface Prompt {
 export class ChatbotComponent implements OnInit {
   private API_URL = environment.API_URL;
 
-  chats?: Chats[];
+  chats: Chats[] = [];
   new_message: string = '';
   chat_history: [] = [];
   prompt: Prompt = {
@@ -40,51 +39,46 @@ export class ChatbotComponent implements OnInit {
     total_tokens: 0,
     total_cost: 0,
   };
-  selected_chat: number = 1;
-
+  selected_chat: Chats | undefined = {
+    chat_id: 3,
+  };
   constructor(private ChatApiService: ChatApiService) {}
 
-  ngOnInit() {
-    this.ChatApiService.loadChatHistory().then((response) => {
-      this.chats = response.data.chats;
-      // this.selected_chat = this.chats[this.selected_chat].chat_id;
-    });
+  async ngOnInit() {
+    await this.load_chat_history();
+    this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
 
-    // this.chat.messages?.push({
-    //   id: uuidv4(),
-    //   from: 'bot',
-    //   message: 'Benvenuto in DocBot!',
-    //   date: new Date(),
-    // });
-    // this.chat.messages?.push({
-    //   id: uuidv4(),
-    //   from: 'bot',
-    //   message: 'Come posso aiutarti?',
-    //   date: new Date(),
-    // });
+    if (!this.selected_chat?.messages) {
+      console.error('Selected chat does not exist.');
+      this.new_chat();
+    }
   }
 
-  send_message() {
+  private async load_chat_history() {
+    await this.ChatApiService.loadChatHistory().then(
+      (response) => (this.chats = response.data.chats)
+    );
+  }
+
+  async send_message() {
     if (this.new_message.trim() === '') return;
 
-    this.ChatApiService.getChatResponse(this.new_message)
+    await this.ChatApiService.getChatResponse(
+      this.new_message,
+      this.selected_chat?.chat_id
+    )
       .then((response) => {
-        // this.chat_history = response.data.chat_history;
-
-        this.scrollToBottom();
-
-        // this.chat.messages = response.data.chat_history;
-
-        // this.prompt = response.data.response.prompt;
-        // this.chat.chat_id = response.data.chat_id;
-        //
-        // console.log('chat_history', this.chat_history);
         console.log(response);
+        this.selected_chat!.chat_id = response.data.chat_id;
       })
       .catch((error) => {
         console.log(error);
       });
 
+    await this.load_chat_history();
+    this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
+
+    this.scrollToBottom();
     this.new_message = '';
   }
 
@@ -99,17 +93,36 @@ export class ChatbotComponent implements OnInit {
   }
 
   new_chat() {
-    axios.get(`${this.API_URL}/load_chats`).then((response) => {
-      // const new_chat_id = response.data.chat_id;
-      // console.log(response.data.chats);
-      console.log(this.chats);
-
-      // this.chat.messages = [];
+    this.selected_chat!.chat_id = undefined;
+    this.ChatApiService.loadChatHistory().then((response) => {
+      this.selected_chat!.messages = [];
+      // this.chat.messages?.push({
+      //   id: uuidv4(),
+      //   from: 'bot',
+      //   message: 'Benvenuto in DocBot!',
+      //   date: new Date(),
+      // });
+      // this.chat.messages?.push({
+      //   id: uuidv4(),
+      //   from: 'bot',
+      //   message: 'Come posso aiutarti?',
+      //   date: new Date(),
+      // });
     });
   }
 
-  change_chat(chat_id: number) {
-    this.selected_chat = chat_id - 1;
-    console.log(chat_id);
+  async change_chat(chat_id_clicked?: number) {
+    await this.load_chat_history();
+    this.scrollToBottom();
+
+    this.selected_chat = this.get_selected_chat(chat_id_clicked);
+    console.log('Chat changed to:', this.selected_chat);
+  }
+
+  get_selected_chat(chat_ID?: number): Chats | undefined {
+    if (this.selected_chat) {
+      return this.chats.find((chat) => chat.chat_id === chat_ID);
+    }
+    return undefined;
   }
 }

@@ -8,7 +8,7 @@
 
     <div class="messages_container" id="messages_container">
       <span
-        *ngFor="let chat of chats && chats[selected_chat]?.messages"
+        *ngFor="let chat of selected_chat && selected_chat?.messages"
         [ngClass]="chat.from === 'bot' ? 'message bot' : 'message user'"
       >
         {{ chat.message }}
