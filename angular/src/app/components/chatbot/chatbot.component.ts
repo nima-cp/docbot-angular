@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatApiService } from 'src/app/services/chat-api.service';
-import { v4 as uuidv4 } from 'uuid';
-import { environment } from '../../environments/environment';
 
 interface Messages {
   id?: string;
@@ -28,8 +26,6 @@ interface Prompt {
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent implements OnInit {
-  private API_URL = environment.API_URL;
-
   chats: Chats[] = [];
   new_message: string = '';
   chat_history: [] = [];
@@ -94,21 +90,13 @@ export class ChatbotComponent implements OnInit {
 
   new_chat() {
     this.selected_chat!.chat_id = undefined;
-    this.ChatApiService.loadChatHistory().then((response) => {
-      this.selected_chat!.messages = [];
-      // this.chat.messages?.push({
-      //   id: uuidv4(),
-      //   from: 'bot',
-      //   message: 'Benvenuto in DocBot!',
-      //   date: new Date(),
-      // });
-      // this.chat.messages?.push({
-      //   id: uuidv4(),
-      //   from: 'bot',
-      //   message: 'Come posso aiutarti?',
-      //   date: new Date(),
-      // });
-    });
+    this.selected_chat!.messages = [
+      {
+        from: 'bot',
+        message: 'Ciao, come posso aiutarti?',
+        // date: new Date(),
+      },
+    ];
   }
 
   async change_chat(chat_id_clicked?: number) {

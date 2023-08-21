@@ -96,6 +96,12 @@ def create_message(sender, message):
     }
 
 
+welcome_message = create_message(
+    "bot",
+    "Ciao, come posso aiutarti?",
+)
+
+
 class Chat_test1(db.Model):
     __tablename__ = "Chat_test1"
     id = db.Column(db.Integer, primary_key=True)
@@ -121,7 +127,7 @@ def chatbot_test():
 
     if chat_id is None:
         if "chat_id" not in session:
-            messages = [user_question, bot_response]
+            messages = [welcome_message, user_question, bot_response]
             new_row = Chat_test1(title=title, chat_history=messages)
             db.session.add(new_row)
             db.session.commit()
