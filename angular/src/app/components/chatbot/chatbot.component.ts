@@ -117,4 +117,24 @@ export class ChatbotComponent implements OnInit {
     }
     return undefined;
   }
+
+  sortChatsByLatestMessages(chats: Chats[]): Chats[] {
+    return chats.sort((a, b) => {
+      const latestMessageA = a.messages?.length
+        ? new Date(a.messages[a.messages.length - 1].date ?? '')
+        : undefined;
+      const latestMessageB = b.messages?.length
+        ? new Date(b.messages[b.messages.length - 1].date ?? '')
+        : undefined;
+
+      if (latestMessageA && latestMessageB) {
+        return latestMessageB.getTime() - latestMessageA.getTime();
+      } else if (latestMessageA) {
+        return -1; // A has a message, but B doesn't
+      } else if (latestMessageB) {
+        return 1; // B has a message, but A doesn't
+      }
+      return 0; // Both A and B don't have messages
+    });
+  }
 }

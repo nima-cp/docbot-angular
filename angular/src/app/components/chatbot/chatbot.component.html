@@ -53,7 +53,7 @@
 
     <div class="chat-histories">
       <div
-        *ngFor="let chat of chats"
+        *ngFor="let chat of sortChatsByLatestMessages(chats)"
         class="chat-title"
         (click)="change_chat(chat.chat_id)"
       >
