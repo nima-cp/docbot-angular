@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatApiService } from 'src/app/services/chat-api.service';
 
-interface Messages {
+interface Message {
   id?: string;
   from?: 'user' | 'bot';
   message?: string;
   date?: Date;
 }
-interface Chats {
+
+interface Chat {
   chat_id?: number;
   title?: string;
-  messages?: Messages[];
+  messages?: Message[];
 }
 
 interface Prompt {
@@ -26,7 +27,7 @@ interface Prompt {
   styleUrls: ['./chatbot.component.css'],
 })
 export class ChatbotComponent implements OnInit {
-  chats: Chats[] = [];
+  chats: Chat[] = [];
   new_message: string = '';
   prompt: Prompt = {
     completion_tokens: 0,
@@ -34,7 +35,7 @@ export class ChatbotComponent implements OnInit {
     total_tokens: 0,
     total_cost: 0,
   };
-  selected_chat?: Chats = {};
+  selected_chat?: Chat = {};
   open_new_chat: boolean = false;
 
   constructor(private ChatApiService: ChatApiService) {}
@@ -42,48 +43,42 @@ export class ChatbotComponent implements OnInit {
   async ngOnInit() {
     await this.load_chat_history();
     this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
-
-    if (!this.selected_chat?.messages) {
-      console.error('Selected chat does not exist.');
-      // this.new_chat();
-    }
   }
 
   private async load_chat_history() {
-    await this.ChatApiService.loadChatHistory().then(
-      (response) => (this.chats = response.data.chats)
-    );
+    const response = await this.ChatApiService.loadChatHistory();
+    this.chats = response.data.chats;
 
-    if (!this.selected_chat?.chat_id)
-      this.selected_chat!.chat_id = this.chats[0].chat_id;
+
+    if (!this.selected_chat?.chat_id) this.selected_chat = this.chats[0];
   }
 
   async send_message() {
     if (this.new_message.trim() === '') return;
 
-    await this.ChatApiService.getChatResponse(
-      this.new_message,
-      this.open_new_chat ? undefined : this.selected_chat?.chat_id
-    )
-      .then((response) => {
-        this.open_new_chat = false;
-        console.log(response);
-        this.selected_chat!.chat_id = response.data.chat_id;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      const response = await this.ChatApiService.getChatResponse(
+        this.new_message,
+        this.open_new_chat ? undefined : this.selected_chat?.chat_id
+      );
 
-    await this.load_chat_history();
-    this.selected_chat = this.get_selected_chat(this.selected_chat!.chat_id);
+      this.open_new_chat = false;
+      console.log(response);
+      this.selected_chat!.chat_id = response.data.chat_id;
 
-    this.scrollToBottom();
-    this.new_message = '';
+      await this.load_chat_history();
+      this.selected_chat = this.get_selected_chat(this.selected_chat!.chat_id);
+
+      this.scrollToBottom();
+      this.new_message = '';
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   scrollToBottom() {
-    let chatContainer = document.getElementById('messages_container');
-    chatContainer!.scrollTop = chatContainer!.scrollHeight;
+    const chatContainer = document.getElementById('messages_container');
+    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
   restartDB() {
@@ -97,27 +92,24 @@ export class ChatbotComponent implements OnInit {
       {
         from: 'bot',
         message: 'Ciao, come posso aiutarti?',
-        // date: new Date(),
       },
     ];
   }
 
-  async change_chat(chat_id_clicked?: number) {
+  async change_chat(clicked_chat_id?: number) {
+    this.open_new_chat = false;
     await this.load_chat_history();
-    this.selected_chat!.chat_id = chat_id_clicked;
+    this.selected_chat!.chat_id = clicked_chat_id;
     this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
     console.log('Chat changed to:', this.selected_chat);
     this.scrollToBottom();
   }
 
-  get_selected_chat(chat_ID?: number): Chats | undefined {
-    if (this.selected_chat) {
-      return this.chats.find((chat) => chat.chat_id === chat_ID);
-    }
-    return undefined;
+  get_selected_chat(chatId?: number): Chat | undefined {
+    return this.chats.find((chat) => chat.chat_id === chatId);
   }
 
-  sort_chats_by_latest_messages(chats: Chats[]): Chats[] {
+  sort_chats_by_latest_messages(chats: Chat[]): Chat[] {
     return chats.sort((a, b) => {
       const latestMessageA = a.messages?.length
         ? new Date(a.messages.at(-1)?.date ?? '')
@@ -126,13 +118,11 @@ export class ChatbotComponent implements OnInit {
         ? new Date(b.messages.at(-1)?.date ?? '')
         : undefined;
 
-      if (latestMessageA && latestMessageB) {
+      if (latestMessageA && latestMessageB)
         return latestMessageB.getTime() - latestMessageA.getTime();
-      } else if (latestMessageA) {
-        return -1; // A has a message, but B doesn't
-      } else if (latestMessageB) {
-        return 1; // B has a message, but A doesn't
-      }
+      else if (latestMessageA) return -1; // A has a message, but B doesn't
+      else if (latestMessageB) return 1; // B has a message, but A doesn't
+
       return 0; // Both A and B don't have messages
     });
   }
