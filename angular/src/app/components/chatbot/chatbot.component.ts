@@ -8,7 +8,7 @@ interface Messages {
   date?: Date;
 }
 interface Chats {
-  chat_id: number | undefined;
+  chat_id?: number;
   title?: string;
   messages?: Messages[];
 }
@@ -35,9 +35,9 @@ export class ChatbotComponent implements OnInit {
     total_tokens: 0,
     total_cost: 0,
   };
-  selected_chat: Chats | undefined = {
-    chat_id: 3,
-  };
+  selected_chat?: Chats = {};
+  open_new_chat: boolean = false;
+
   constructor(private ChatApiService: ChatApiService) {}
 
   async ngOnInit() {
@@ -46,7 +46,7 @@ export class ChatbotComponent implements OnInit {
 
     if (!this.selected_chat?.messages) {
       console.error('Selected chat does not exist.');
-      this.new_chat();
+      // this.new_chat();
     }
   }
 
@@ -54,6 +54,9 @@ export class ChatbotComponent implements OnInit {
     await this.ChatApiService.loadChatHistory().then(
       (response) => (this.chats = response.data.chats)
     );
+
+    if (!this.selected_chat?.chat_id)
+      this.selected_chat!.chat_id = this.chats[0].chat_id;
   }
 
   async send_message() {
@@ -61,9 +64,10 @@ export class ChatbotComponent implements OnInit {
 
     await this.ChatApiService.getChatResponse(
       this.new_message,
-      this.selected_chat?.chat_id
+      this.open_new_chat ? undefined : this.selected_chat?.chat_id
     )
       .then((response) => {
+        this.open_new_chat = false;
         console.log(response);
         this.selected_chat!.chat_id = response.data.chat_id;
       })
@@ -72,7 +76,7 @@ export class ChatbotComponent implements OnInit {
       });
 
     await this.load_chat_history();
-    this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
+    this.selected_chat = this.get_selected_chat(this.selected_chat!.chat_id);
 
     this.scrollToBottom();
     this.new_message = '';
@@ -89,7 +93,7 @@ export class ChatbotComponent implements OnInit {
   }
 
   new_chat() {
-    this.selected_chat!.chat_id = undefined;
+    this.open_new_chat = true;
     this.selected_chat!.messages = [
       {
         from: 'bot',
@@ -101,10 +105,10 @@ export class ChatbotComponent implements OnInit {
 
   async change_chat(chat_id_clicked?: number) {
     await this.load_chat_history();
-    this.scrollToBottom();
-
-    this.selected_chat = this.get_selected_chat(chat_id_clicked);
+    this.selected_chat!.chat_id = chat_id_clicked;
+    this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
     console.log('Chat changed to:', this.selected_chat);
+    this.scrollToBottom();
   }
 
   get_selected_chat(chat_ID?: number): Chats | undefined {
