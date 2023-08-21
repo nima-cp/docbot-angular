@@ -28,7 +28,6 @@ interface Prompt {
 export class ChatbotComponent implements OnInit {
   chats: Chats[] = [];
   new_message: string = '';
-  chat_history: [] = [];
   prompt: Prompt = {
     completion_tokens: 0,
     prompt_tokens: 0,
@@ -118,13 +117,13 @@ export class ChatbotComponent implements OnInit {
     return undefined;
   }
 
-  sortChatsByLatestMessages(chats: Chats[]): Chats[] {
+  sort_chats_by_latest_messages(chats: Chats[]): Chats[] {
     return chats.sort((a, b) => {
       const latestMessageA = a.messages?.length
-        ? new Date(a.messages[a.messages.length - 1].date ?? '')
+        ? new Date(a.messages.at(-1)?.date ?? '')
         : undefined;
       const latestMessageB = b.messages?.length
-        ? new Date(b.messages[b.messages.length - 1].date ?? '')
+        ? new Date(b.messages.at(-1)?.date ?? '')
         : undefined;
 
       if (latestMessageA && latestMessageB) {
