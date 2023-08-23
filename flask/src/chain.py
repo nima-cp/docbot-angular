@@ -15,6 +15,24 @@ load_dotenv()
 
 # %%
 class DocBot:
+    """
+    A conversational AI bot that uses a combination of language models, embeddings, and conversation memory.
+
+    Attributes:
+        embeddings
+        vector_store (Chroma): Vector store for document retrieval.
+        vector_store_retriever (Chroma.Retriever): Retriever for document retrieval.
+        llm (ChatOpenAI): Chat model for language generation.
+        template (str): Prompt template for generating context-aware responses.
+        prompt (PromptTemplate): Prompt generator based on the template.
+        memory (ConversationBufferWindowMemory): Conversation memory for retaining chat history.
+        conversational_chain (ConversationalRetrievalChain): Conversational retrieval chain for generating human-like responses.
+
+    Methods:
+        __init__(self, history_number=5): Constructor to initialize the DocBot instance.
+        get_response(self, question: str, chat_history=[]): Get a response from the bot given a question and optional chat history.
+    """
+
     ############## Embedder and DB
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
     persist_directory = (
@@ -68,6 +86,16 @@ class DocBot:
         )
 
     def get_response(self, question: str, chat_history=[]):
+        """
+        Generate a response to a given question.
+
+        Args:
+            question (str): The question posed to the bot.
+            chat_history (list, optional): List of chat history dictionaries. Defaults to an empty list.
+
+        Returns:
+            dict: A dictionary containing the generated response, chat history, and prompt details.
+        """
         with get_openai_callback() as cb:
             result = self.conversational_chain(
                 {"question": question, "chat_history": chat_history}

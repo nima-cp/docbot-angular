@@ -76,6 +76,20 @@ agent = DocBot()
 
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
+    """
+    Endpoint for interacting with the chatbot.
+
+    This endpoint receives POST requests with JSON data containing a user message and a chat_id.
+    It processes the user's message, maintains the chat history, and returns the bot's response.
+
+    Args:
+        None (request data is extracted from the request)
+
+    Returns:
+        Flask Response: JSON response containing chat_id, bot's response, tokens used, and updated chat history.
+
+    Raises:
+        Exception: If there is an error during the processing of the request."""
     try:
         data = request.get_json()  # Get the message from the request
         question = data.get("message")  # Extract the message from the JSON data
@@ -137,6 +151,13 @@ def chatbot():
 
 @app.route("/load_chats")
 def load_chats():
+    """
+    Retrieve the chat histories from database.
+
+    Returns:
+        A JSON object containing a list of dictionaries, each representing a chat.
+        Each chat dictionary contains the chat's ID, title, and chat history (which is all the messages from the user and the bot).
+    """
     all_chats = Chat_db.query.all()
     if not all_chats:
         all_chats = []

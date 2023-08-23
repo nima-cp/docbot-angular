@@ -1,3 +1,24 @@
+"""
+Document Embedding and Indexing Process
+
+This file demonstrates the process of document embedding and indexing using various techniques.
+It includes configurations, steps, and examples of embedding documents, creating a vector store,
+and performing similarity search.
+
+Dependencies:
+- langchain.embeddings
+- langchain.text_splitter
+- langchain.document_loaders
+- langchain.vectorstores
+
+Usage:
+- Configure the file path where the documents are located (filePath).
+- Load and process text files using DirectoryLoader and PyMuPDFLoader.
+- Split the documents into smaller chunks using RecursiveCharacterTextSplitter.
+- Choose an embedding technique (OpenAIEmbeddings, HuggingFaceEmbeddings, SentenceTransformerEmbeddings).
+- Create a Chroma vector store for indexing and storing document embeddings.
+- Persist the vector store to disk.
+"""
 # %%
 # from langchain.llms import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
