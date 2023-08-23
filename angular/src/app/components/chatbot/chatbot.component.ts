@@ -43,6 +43,7 @@ export class ChatbotComponent implements OnInit {
   async ngOnInit() {
     await this.load_chat_history();
     this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
+    if (!this.selected_chat) this.new_chat();
   }
 
   private async load_chat_history() {
@@ -61,6 +62,7 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
     const question = this.new_message;
     this.new_message = '';
+
     try {
       const response = await this.ChatApiService.getChatResponse(
         question,
@@ -93,6 +95,11 @@ export class ChatbotComponent implements OnInit {
 
   new_chat() {
     this.open_new_chat = true;
+
+    if (!this.selected_chat) {
+      this.selected_chat = {};
+    }
+
     this.selected_chat!.messages = [
       {
         from: 'bot',
