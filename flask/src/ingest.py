@@ -21,6 +21,7 @@ loader = DirectoryLoader(
     filePath,
     glob="./*.pdf",
     loader_cls=PyMuPDFLoader,
+    show_progress=True,
 )
 pages = loader.load_and_split()
 

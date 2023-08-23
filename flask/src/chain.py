@@ -32,6 +32,7 @@ class DocBot:
 
     ############## Prompt
     template = """
+        You are a helpful multilingual AI assistant. Answer in the same language as the question at the end.
         Use chat history : {chat_history} to determine the condition you are to research if not blank
         Use the following pieces of context to answer the question at the end.
         {context}
@@ -83,13 +84,13 @@ class DocBot:
             print(f"Total Tokens: {cb.total_tokens}")
             print(f"Total Cost (USD): ${cb.total_cost}")
 
-        chat_history.append({"question": question, "answer": result["answer"]})
+        # chat_history.append({"question": question, "answer": result["answer"]})
 
         response = {
             "result": {
                 "question": question,
                 "answer": result["answer"],
-                "chat_history": result["chat_history"],
+                "chat_history": chat_history,
             },
             "prompt": {
                 "prompt_tokens": cb.prompt_tokens,
@@ -99,14 +100,14 @@ class DocBot:
             },
         }
 
-        return response, chat_history
+        return response
 
 
 # %%
 
 # agent = DocBot()
 
-# quesftion = "cosa e invoice date della WORLD FUEL SERVICE SINGAPORE ?"
+# question = "cosa e invoice date della WORLD FUEL SERVICE SINGAPORE ?"
 # response, chat_history = agent.get_response(question)
 # print("response:   ", response)
 # print("chat_history:   ", chat_history)

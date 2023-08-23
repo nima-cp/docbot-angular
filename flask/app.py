@@ -39,51 +39,16 @@ def handle_exception(e):
     return {"error": "Internal service error"}, 500
 
 
-# ------------------ ROUTES ------------------
-@app.route("/chatbot", methods=["POST"])
-def chatbot():
-    sys.path.insert(1, "./src")
-    from src.chain import DocBot
+# ------------------ MODELS ------------------
+class Chat_db(db.Model):
+    __tablename__ = "Chat_db"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=False, nullable=True)
+    chat_history = db.Column(JSONB)
 
-    try:
-        data = request.get_json()  # Get the message from the request
-        question = data.get("message")  # Extract the message from the JSON data
-        chat_id = data.get("chat_id")  # Extract the session id
-
-        if chat_id is None:
-            if "chat_id" not in session:
-                chat_id = str(uuid.uuid4())
-                session["chat_id"] = chat_id
-                session.permanent = True
-
-        agent = DocBot()
-        response, chat_history = agent.get_response(question)
-        print("\n\n\n res  ", response)
-        print("\n\n\nchat_history  ", chat_history)
-    except Exception as e:
-        print(e)
-        response = {"error": str(e)}
-        return make_response(jsonify(response), 500)
-
-    return jsonify(
-        {"chat_id": chat_id, "response": response, "chat_history": chat_history}
-    )
-
-
-@app.route("/new_chat")
-def new_chat():
-    chat_id = str(uuid.uuid4())
-
-    session["chat_id"] = chat_id
-
-    email = request.json["email"]
-
-    response = make_response()
-
-    response.headers["chat_id"] = chat_id
-    response.headers["email"] = email
-
-    return response
+    def __init__(self, title, chat_history):
+        self.title = title
+        self.chat_history = chat_history
 
 
 def create_message(sender, message):
@@ -102,58 +67,79 @@ welcome_message = create_message(
 )
 
 
-class Chat_test1(db.Model):
-    __tablename__ = "Chat_test1"
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, unique=False, nullable=True)
-    chat_history = db.Column(JSONB)
+# ------------------ ROUTES ------------------
+sys.path.insert(1, "./src")
+from src.chain import DocBot
 
-    def __init__(self, title, chat_history):
-        self.title = title
-        self.chat_history = chat_history
+agent = DocBot()
 
 
-@app.route("/chatbot_test", methods=["POST"])
-def chatbot_test():
-    data = request.get_json()
-    question = data.get("question")
-    title = question  # for now title is the first user message
-    chat_id = data.get("chat_id")
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+    try:
+        data = request.get_json()  # Get the message from the request
+        question = data.get("message")  # Extract the message from the JSON data
+        chat_id = data.get("chat_id")  # Extract the session id
+        title = question  # for now title is the first user message
 
-    # for testing purposes
-    response = question
-    user_question = create_message("user", question)
-    bot_response = create_message("bot", response)
+        user_question = create_message("user", question)
+        if chat_id is None:
+            if "chat_id" not in session:
+                response = agent.get_response(question)
+                bot_response = create_message("bot", response["result"]["answer"])
 
-    if chat_id is None:
-        if "chat_id" not in session:
-            messages = [welcome_message, user_question, bot_response]
-            new_row = Chat_test1(title=title, chat_history=messages)
-            db.session.add(new_row)
-            db.session.commit()
-            print("chat added successfully")
+                messages = [welcome_message, user_question, bot_response]
+                new_row = Chat_db(title=title, chat_history=messages)
+                db.session.add(new_row)
+                db.session.commit()
+                print("chat added successfully")
 
-            chat_id = new_row.id
-            session["chat_id"] = chat_id
-            session.permanent = True
-    else:
-        existing_chat = Chat_test1.query.filter_by(id=chat_id).first()
-        # existing_chat = db.session.get(Chat_test1, {"id": chat_id})
-        # db.session.query(Chat_test1).where(id == chat_id).update({"title": 33})
+                chat_id = new_row.id
+                session["chat_id"] = chat_id
+                session.permanent = True
+        else:
+            existing_chat = Chat_db.query.filter_by(id=chat_id).first()
+            # existing_chat = db.session.get(Chat_db, {"id": chat_id})
+            # db.session.query(Chat_db).where(id == chat_id).update({"title": 33})
 
-        if existing_chat:
-            messages = existing_chat.chat_history
-            messages.extend([user_question, bot_response])
-            flag_modified(existing_chat, "chat_history")
+            if existing_chat:
+                messages = existing_chat.chat_history
 
-            db.session.commit()
+                chat_history = [
+                    {"answer": msg["message"]}
+                    if msg["from"] == "bot"
+                    else {"question": msg["message"]}
+                    for msg in messages
+                ]
 
-    return jsonify({"chat_id": chat_id, "response": response, "chat_history": messages})
+                response = agent.get_response(question, chat_history)
+                bot_response = create_message("bot", response["result"]["answer"])
+
+                messages.extend([user_question, bot_response])
+                flag_modified(existing_chat, "chat_history")
+
+                db.session.commit()
+
+    except Exception as e:
+        print(e)
+        response = {"error": str(e)}
+        return make_response(jsonify(response), 500)
+
+    return jsonify(
+        {
+            "chat_id": chat_id,
+            "response": response,
+            "tokens": response["prompt"],
+            "messages": messages,
+        }
+    )
 
 
 @app.route("/load_chats")
 def load_chats():
-    all_chats = Chat_test1.query.all()
+    all_chats = Chat_db.query.all()
+    if not all_chats:
+        all_chats = []
     chats = []
     for chat in all_chats:
         chats.append(
