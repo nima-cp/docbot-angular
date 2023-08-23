@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { ChatbotComponent } from './components/chatbot/chatbot.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorMessageComponent } from './components/error-message/error-message.component';
 
 @NgModule({
-  declarations: [AppComponent, ChatbotComponent],
+  declarations: [AppComponent, ChatbotComponent, ErrorMessageComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [HttpClientModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

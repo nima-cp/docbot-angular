@@ -37,6 +37,7 @@ export class ChatbotComponent implements OnInit {
   };
   selected_chat?: Chat = {};
   open_new_chat: boolean = false;
+  errorMessage?: string = '';
 
   constructor(private ChatApiService: ChatApiService) {}
 
@@ -47,13 +48,20 @@ export class ChatbotComponent implements OnInit {
   }
 
   private async load_chat_history() {
-    const response = await this.ChatApiService.loadChatHistory();
-    this.chats = response.data.chats;
+    try {
+      const response = await this.ChatApiService.loadChatHistory();
+      this.chats = response.data.chats;
 
-    if (!this.selected_chat?.chat_id) this.selected_chat = this.chats[0];
+      if (!this.selected_chat?.chat_id) this.selected_chat = this.chats[0];
+    } catch (error) {
+      console.error('An error occurred while loading chat history:', error);
+      this.errorMessage =
+        'An error occurred while loading chat history. Please try again.';
+    }
   }
 
   async send_message() {
+    this.errorMessage = '';
     if (this.new_message.trim() === '') return;
     this.selected_chat!.messages?.push({
       from: 'user',
@@ -68,7 +76,7 @@ export class ChatbotComponent implements OnInit {
         question,
         this.open_new_chat ? undefined : this.selected_chat?.chat_id
       );
-      console.log(response);
+      console.log('response', response);
 
       this.open_new_chat = false;
       this.selected_chat!.chat_id = response.data.chat_id;
@@ -78,8 +86,30 @@ export class ChatbotComponent implements OnInit {
       this.selected_chat = this.get_selected_chat(this.selected_chat!.chat_id);
 
       this.scrollToBottom();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log('Error Type 1: Server Response Error');
+        console.log('Error Data:', error.response.data);
+        console.log('Status Code:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+        this.errorMessage =
+          'Server responded with an error: ' + error.response.data.error;
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log('Error Type 2: No Response Received');
+        console.log('Request:', error.request);
+        this.errorMessage = 'No response received from the server.';
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error Type 3: Request Setup Error');
+        console.log('Error Message:', error.message);
+        this.errorMessage = 'An error occurred while setting up the request.';
+      }
+      console.log('Request Config:', error.config);
     }
   }
 
