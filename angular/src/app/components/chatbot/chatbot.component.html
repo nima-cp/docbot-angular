@@ -28,14 +28,31 @@
 
   <div>
     <div class="chat-histories">
-      <div
-        *ngFor="let chat of sort_chats_by_latest_messages(chats)"
-        class="chat-title"
-        [ngClass]="{ 'selected-chat': chat.chat_id === selected_chat?.chat_id }"
-        (click)="change_chat(chat.chat_id)"
+      <ng-container
+        *ngIf="
+          sort_chats_by_latest_messages(chats).length === 0;
+          else chatsExist
+        "
       >
-        {{ chat.title }}
-      </div>
+        <!-- Display this content when there are no chats -->
+        <div class="chat-title no-history" (click)="new_chat()">
+          Nessuna chiacchierata precedente
+        </div>
+      </ng-container>
+
+      <ng-template #chatsExist>
+        <!-- Display chats when they exist -->
+        <div
+          *ngFor="let chat of sort_chats_by_latest_messages(chats)"
+          class="chat-title"
+          [ngClass]="{
+            'selected-chat': chat.chat_id === selected_chat?.chat_id
+          }"
+          (click)="change_chat(chat.chat_id)"
+        >
+          {{ chat.title }}
+        </div>
+      </ng-template>
     </div>
 
     <table class="prompt_table">

@@ -36,7 +36,7 @@
 
 .messages_container {
   height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -155,8 +155,9 @@ button.restartDB {
   margin: 1rem 0 2rem 2rem;
   width: 80%;
   max-width: 350px;
+  height: 250px;
   max-height: 450px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 
   border: 1.8px solid #1b4ab9;
@@ -177,7 +178,7 @@ button.restartDB {
   transition: all ease-in-out 0.3s;
 }
 
-.chat-histories .chat-title:hover {
+.chat-histories.chat-title:hover {
   background: hsl(222, 75%, 58%);
   color: white;
   cursor: pointer;
@@ -189,4 +190,10 @@ button.restartDB {
   color: white;
   background: hsl(222, 79%, 51%);
   transform: scale(1.05);
+}
+
+.chat-histories .chat-title.no-history {
+  color: gray;
+  font-size: 0.9rem;
+  padding: 1rem 1.5rem;
 }
