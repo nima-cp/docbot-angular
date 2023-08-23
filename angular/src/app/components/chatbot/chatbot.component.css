@@ -35,7 +35,7 @@
 }
 
 .messages_container {
-  height: 500px;
+  height: 600px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -95,16 +95,15 @@ button:hover {
   opacity: 0.9;
 }
 
-.prompt_table {
+.tokens_table {
   width: clamp(230px, 20vw, 350px);
   height: 150px;
-  margin-left: 2rem;
 
   border: #000 solid 1px;
   border-radius: 10px;
 }
 
-.prompt_table td {
+.tokens_table td {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -112,21 +111,20 @@ button:hover {
   text-align: center;
 }
 
-/* Responsive table on small screens */
-
 @media (max-width: 800px) {
   .container {
     flex-direction: column;
     align-items: center;
   }
-  table {
+  .sidebar {
     margin-top: 2rem;
   }
 }
 
 button.new_chat {
+  width: 70%;
   padding: 11px 25px;
-  margin: 2rem 0.5rem 0;
+  margin: 2rem 0rem 0;
   background-color: #fff;
   color: #1b4ab9;
   border: 2px solid #1b4ab9;
@@ -147,16 +145,28 @@ button.restartDB {
   cursor: pointer;
 }
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 1rem;
+}
+
 .chat-histories {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  margin: 1rem 0 2rem 2rem;
+  padding: 0 0.6rem;
+  margin-bottom: 1rem;
+
   width: 80%;
   max-width: 350px;
-  height: 250px;
+  height: clamp(150px, auto, 450px);
   max-height: 450px;
+
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -197,4 +207,3 @@ button.restartDB {
   font-size: 0.9rem;
   padding: 1rem 1.5rem;
 }
-

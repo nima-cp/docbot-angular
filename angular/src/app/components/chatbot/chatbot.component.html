@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="sidebar">
     <div class="chat-histories">
       <ng-container
         *ngIf="
@@ -55,7 +55,7 @@
       </ng-template>
     </div>
 
-    <table class="prompt_table">
+    <table class="tokens_table">
       <tr>
         <td>Completion Tokens</td>
         <td>{{ tokens.completion_tokens }}</td>
@@ -78,7 +78,7 @@
         </td>
       </tr>
     </table>
+    <button class="new_chat" (click)="new_chat()">New chat</button>
   </div>
 </div>
-<button class="new_chat" (click)="new_chat()">New chat</button>
-<button class="restartDB" (click)="restartDB()">Restart DB</button>
+<!-- <button class="restartDB" (click)="restartDB()">Restart DB</button> -->
