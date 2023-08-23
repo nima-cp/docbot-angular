@@ -39,15 +39,24 @@ export class ChatbotComponent implements OnInit {
   open_new_chat: boolean = false;
   errorMessage?: string = '';
 
+  /**
+   * Service responsible for interacting with the chat-related APIs.
+   * This service provides functions to call APIs for handling chat data.
+   * @param {ChatApiService} ChatApiService - An instance of the ChatApiService used for making API calls.
+   */
   constructor(private ChatApiService: ChatApiService) {}
-
   async ngOnInit() {
     await this.load_chat_history();
     this.selected_chat = this.get_selected_chat(this.selected_chat?.chat_id);
     if (!this.selected_chat) this.new_chat();
   }
 
-  private async load_chat_history() {
+  /**
+   * Loads chat history from the ChatApiService and updates the UI with retrieved data.
+   * If an error occurs, displays an error message to the user.
+   * @throws {string} An error message if loading chat history fails.
+   */
+  private async load_chat_history(): Promise<void> {
     try {
       const response = await this.ChatApiService.loadChatHistory();
       this.chats = response.data.chats;
@@ -60,9 +69,15 @@ export class ChatbotComponent implements OnInit {
     }
   }
 
-  async send_message() {
+  /**
+   * Sends a message to the chatbot and handles various error scenarios.
+   * Clears error message before sending a new message.
+   * @throws {string} Error messages based on the type of error encountered.
+   */
+  async send_message(): Promise<void> {
     this.errorMessage = '';
     if (this.new_message.trim() === '') return;
+
     this.selected_chat!.messages?.push({
       from: 'user',
       message: this.new_message,
@@ -87,6 +102,18 @@ export class ChatbotComponent implements OnInit {
 
       this.scrollToBottom();
     } catch (error: any) {
+      /**
+       * Error Handling Block
+       *
+       * This block handles various error scenarios that might occur during the axios.post request.
+       * It categorizes errors into different types based on their properties and provides relevant
+       * error messages and console logs for each type.
+       *
+       * Types of Errors:
+       * 1. Server Response Error: When the server responds with a non-successful status code.
+       * 2. No Response Received: When the request was made, but no response was received.
+       * 3. Request Setup Error: When an error occurred while setting up the request.
+       */
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
@@ -113,17 +140,24 @@ export class ChatbotComponent implements OnInit {
     }
   }
 
+  /**
+   * Scrolls the chat container to the bottom to display the latest messages.
+   */
   scrollToBottom() {
     const chatContainer = document.getElementById('messages_container');
     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
-  restartDB() {
-    console.log('DB Restarted!');
-    // this.ChatApiService.restartDB()
-  }
+  // restartDB() {
+  //   console.log('DB Restarted!');
+  //   // this.ChatApiService.restartDB()
+  // }
 
-  new_chat() {
+  /**
+   * Starts a new chat by initializing the 'selected_chat' with an initial message from the bot.
+   * It sets the open_new_chat flag to true to pass undefined for the chat_id
+   */
+  new_chat(): void {
     this.open_new_chat = true;
 
     if (!this.selected_chat) {
@@ -138,7 +172,12 @@ export class ChatbotComponent implements OnInit {
     ];
   }
 
-  async change_chat(clicked_chat_id?: number) {
+  /**
+   * Changes the currently selected chat based on the clicked chat's ID.
+   * Loads the chat history and updates the UI accordingly.
+   * @param {number} clicked_chat_id - The ID of the clicked chat.
+   */
+  async change_chat(clicked_chat_id?: number): Promise<void> {
     this.open_new_chat = false;
     await this.load_chat_history();
     this.selected_chat!.chat_id = clicked_chat_id;
@@ -147,10 +186,20 @@ export class ChatbotComponent implements OnInit {
     this.scrollToBottom();
   }
 
+  /**
+   * Retrieves the selected chat based on its chat ID.
+   * @param {number} chatId - The ID of the chat.
+   * @returns {Chat | undefined} The selected chat object or undefined if not found.
+   */
   get_selected_chat(chatId?: number): Chat | undefined {
     return this.chats.find((chat) => chat.chat_id === chatId);
   }
 
+  /**
+   * Sorts an array of chats based on the latest messages' timestamps.
+   * @param {Chat[]} chats - An array of chats to be sorted.
+   * @returns {Chat[]} The sorted array of chats.
+   */
   sort_chats_by_latest_messages(chats: Chat[]): Chat[] {
     return chats.sort((a, b) => {
       const latestMessageA = a.messages?.length
