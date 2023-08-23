@@ -41,23 +41,23 @@
     <table class="prompt_table">
       <tr>
         <td>Completion Tokens</td>
-        <td>{{ prompt.completion_tokens }}</td>
+        <td>{{ tokens.completion_tokens }}</td>
       </tr>
 
       <tr>
         <td>Prompt Tokens</td>
-        <td>{{ prompt.prompt_tokens }}</td>
+        <td>{{ tokens.prompt_tokens }}</td>
       </tr>
 
       <tr>
         <td>Total Tokens</td>
-        <td>{{ prompt.total_tokens }}</td>
+        <td>{{ tokens.total_tokens }}</td>
       </tr>
 
       <tr>
         <td>Total Cost (USD)</td>
         <td>
-          ${{ prompt.total_cost === 0 ? 0 : prompt.total_cost?.toFixed(4) }}
+          ${{ tokens.total_cost === 0 ? 0 : tokens.total_cost?.toFixed(4) }}
         </td>
       </tr>
     </table>

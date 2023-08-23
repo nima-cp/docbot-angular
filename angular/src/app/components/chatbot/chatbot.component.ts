@@ -14,7 +14,7 @@ interface Chat {
   messages?: Message[];
 }
 
-interface Prompt {
+interface Tokens {
   completion_tokens?: number;
   prompt_tokens?: number;
   total_tokens?: number;
@@ -29,7 +29,7 @@ interface Prompt {
 export class ChatbotComponent implements OnInit {
   chats: Chat[] = [];
   new_message: string = '';
-  prompt: Prompt = {
+  tokens: Tokens = {
     completion_tokens: 0,
     prompt_tokens: 0,
     total_tokens: 0,
@@ -49,28 +49,33 @@ export class ChatbotComponent implements OnInit {
     const response = await this.ChatApiService.loadChatHistory();
     this.chats = response.data.chats;
 
-
     if (!this.selected_chat?.chat_id) this.selected_chat = this.chats[0];
   }
 
   async send_message() {
     if (this.new_message.trim() === '') return;
-
+    this.selected_chat!.messages?.push({
+      from: 'user',
+      message: this.new_message,
+    });
+    this.scrollToBottom();
+    const question = this.new_message;
+    this.new_message = '';
     try {
       const response = await this.ChatApiService.getChatResponse(
-        this.new_message,
+        question,
         this.open_new_chat ? undefined : this.selected_chat?.chat_id
       );
+      console.log(response);
 
       this.open_new_chat = false;
-      console.log(response);
       this.selected_chat!.chat_id = response.data.chat_id;
+      this.tokens = response.data.tokens;
 
       await this.load_chat_history();
       this.selected_chat = this.get_selected_chat(this.selected_chat!.chat_id);
 
       this.scrollToBottom();
-      this.new_message = '';
     } catch (error) {
       console.log(error);
     }
