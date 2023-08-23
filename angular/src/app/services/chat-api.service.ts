@@ -15,9 +15,9 @@ export class ChatApiService {
   }
 
   getChatResponse(message: string, chat_id?: number) {
-    return axios.post(`${this.API_URL}/chatbot_test`, {
+    return axios.post(`${this.API_URL}/chatbot`, {
       chat_id,
-      question: message,
+      message,
     });
   }
 }
