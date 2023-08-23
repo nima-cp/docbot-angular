@@ -38,6 +38,7 @@ export class ChatbotComponent implements OnInit {
   selected_chat?: Chat = {};
   open_new_chat: boolean = false;
   errorMessage?: string = '';
+  isLoading: boolean = false;
 
   /**
    * Service responsible for interacting with the chat-related APIs.
@@ -75,6 +76,7 @@ export class ChatbotComponent implements OnInit {
    * @throws {string} Error messages based on the type of error encountered.
    */
   async send_message(): Promise<void> {
+    this.isLoading = true;
     this.errorMessage = '';
     if (this.new_message.trim() === '') return;
 
@@ -91,6 +93,7 @@ export class ChatbotComponent implements OnInit {
         question,
         this.open_new_chat ? undefined : this.selected_chat?.chat_id
       );
+      this.isLoading = false;
       console.log('response', response);
 
       this.open_new_chat = false;
@@ -114,6 +117,8 @@ export class ChatbotComponent implements OnInit {
        * 2. No Response Received: When the request was made, but no response was received.
        * 3. Request Setup Error: When an error occurred while setting up the request.
        */
+      this.isLoading = false;
+
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
