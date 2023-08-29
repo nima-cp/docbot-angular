@@ -28,12 +28,20 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 # from langchain.document_loaders import PyPDFLoader
 from langchain.document_loaders import PyMuPDFLoader
 from langchain.document_loaders import DirectoryLoader
+from langchain.document_loaders import UnstructuredXMLLoader
+from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.vectorstores import Chroma
+import os
+from dotenv import load_dotenv
 
-# %% Deleting the DB
-# # To cleanup, you can delete the collection
-# vectorStore.delete_collection()
-# vectorStore.persist()
+load_dotenv()
+# %%
+persist_directory = (
+    "c:\\Users\\Payoff\\Desktop\\chatbot\\flask\\db\\vectorStore\\chromadb"
+)
+collection_name = os.getenv("COLLECTION_NAME")
+
+
 # %%
 
 filePath = "c:\\Users\\Payoff\\Desktop\\chatbot\\docs"
@@ -44,7 +52,35 @@ loader = DirectoryLoader(
     loader_cls=PyMuPDFLoader,
     show_progress=True,
 )
-pages = loader.load_and_split()
+
+# loader = DirectoryLoader(
+#     filePath,
+#     glob="./*.xml",
+#     loader_cls=UnstructuredXMLLoader,
+#     show_progress=True,
+# )
+# documents = loader.load()
+
+
+# filePath = "c:\\Users\\Payoff\\Desktop\\chatbot\\docs\\2023-05-INZZM0001-VOCI .csv"
+# loader = CSVLoader(
+#     filePath,
+#     csv_args={
+#         "delimiter": ";",
+#         "quotechar": '"',
+#     },
+#     # source_column="Name"
+# )
+
+# documents = loader.load()
+
+# loader = DirectoryLoader(
+#     filePath,
+#     glob="./*.xml",
+#     loader_cls=UnstructuredXMLLoader,
+#     show_progress=True,
+# )
+# pages = loader.load_and_split()
 
 documents = loader.load()
 
@@ -93,10 +129,6 @@ embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 
 ### create the DB
 # Embed and store the docs
-persist_directory = (
-    "c:\\Users\\Payoff\\Desktop\\chatbot\\flask\\db\\vectorStore\\chromadb"
-)
-
 # Supplying a persist_directory will store the embeddings on disk
 vectorStore = Chroma.from_documents(
     documents=splitted_docs, embedding=embeddings, persist_directory=persist_directory
@@ -118,3 +150,14 @@ vectorStore.persist()
 
 
 print("ingest is done")
+# %%
+
+# vector_store_retriever = vectorStore.as_retriever(search_kwargs={"k": 5})
+# # query = "data di nascita in PRVDNB60A29L840Y___1_2"
+# # matching_docs = vectorStore.similarity_search_with_score(query, k=5)
+# # matching_docs
+# # # %%
+# query = "Minimo Contr in PRVDNB60A29L840Y___1_2"
+# docs = vector_store_retriever.get_relevant_documents(query)
+# docs
+# %%

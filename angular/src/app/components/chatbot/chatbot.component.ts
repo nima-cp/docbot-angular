@@ -58,6 +58,8 @@ export class ChatbotComponent implements OnInit {
    * @throws {string} An error message if loading chat history fails.
    */
   private async load_chat_history(): Promise<void> {
+    this.errorMessage = '';
+
     try {
       const response = await this.ChatApiService.loadChatHistory();
       this.chats = response.data.chats;
@@ -76,9 +78,9 @@ export class ChatbotComponent implements OnInit {
    * @throws {string} Error messages based on the type of error encountered.
    */
   async send_message(): Promise<void> {
-    this.isLoading = true;
-    this.errorMessage = '';
     if (this.new_message.trim() === '') return;
+    this.errorMessage = '';
+    this.isLoading = true;
 
     this.selected_chat!.messages?.push({
       from: 'user',

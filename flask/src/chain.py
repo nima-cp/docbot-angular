@@ -54,7 +54,7 @@ class DocBot:
         Use chat history : {chat_history} to determine the condition you are to research if not blank
         Use the following pieces of context to answer the question at the end.
         {context}
-        If you still cant find the answer, just say that you don't know, don't try to make up an answer.
+        If you still can't find the answer, just say that you don't know, don't try to make up an answer.
         You can also look into chat history.
         {chat_history}
         Question: {question}
@@ -136,9 +136,8 @@ class DocBot:
 # agent = DocBot()
 
 # question = "cosa e invoice date della WORLD FUEL SERVICE SINGAPORE ?"
-# response, chat_history = agent.get_response(question)
+# response = agent.get_response(question)
 # print("response:   ", response)
-# print("chat_history:   ", chat_history)
 # print("answer:", response["result"]["answer"])
 
 
