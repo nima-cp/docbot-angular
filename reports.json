@@ -1,0 +1,65 @@
+[
+  {
+    "id": "0242ac120002",
+    "azione": "aggiornata",
+    "data": "21/11/2022",
+    "tipo": null,
+    "stato": "in lavorazione",
+    "responsabile": "Francesca",
+    "link": null
+  },
+  {
+    "id": "37c3b48eb060",
+    "azione": "aggiornata",
+    "data": "22/11/2022",
+    "tipo": null,
+    "stato": "chiusa",
+    "responsabile": "John",
+    "link": null
+  },
+  {
+    "id": "690b5a",
+    "azione": "aggiornata",
+    "data": "23/11/2022",
+    "tipo": null,
+    "stato": "presa in carico",
+    "responsabile": "Alberto",
+    "link": null
+  },
+  {
+    "id": "2581d",
+    "azione": "aggiornata",
+    "data": "24/11/2022",
+    "tipo": null,
+    "stato": "aperta",
+    "responsabile": null,
+    "link": null
+  },
+  {
+    "id": "74daa5bb",
+    "azione": "creata",
+    "data": "25/11/2022",
+    "tipo": "Abuso",
+    "stato": "presa in carico",
+    "responsabile": "Andrea",
+    "link": "https://segnalazione/id1"
+  },
+  {
+    "id": "a1b02c2",
+    "azione": "creata",
+    "data": "26/11/2022",
+    "tipo": "Frode",
+    "stato": "presa in carico",
+    "responsabile": "Nima",
+    "link": "https://segnalazione/id6"
+  },
+  {
+    "id": "237868",
+    "azione": "creata",
+    "data": "28/11/2022",
+    "tipo": "Razzismo",
+    "stato": "aperta",
+    "responsabile": null,
+    "link": "https://segnalazione/id8"
+  }
+]
