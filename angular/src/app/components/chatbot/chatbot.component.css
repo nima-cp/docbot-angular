@@ -35,7 +35,7 @@
 }
 
 .messages_container {
-  height: 600px;
+  height: 620px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -164,8 +164,9 @@ button.restartDB {
 
   width: 80%;
   max-width: 350px;
-  height: clamp(150px, auto, 450px);
-  max-height: 450px;
+  height: auto;
+  min-height: 250px;
+  max-height: 500px;
 
   overflow-y: auto;
   overflow-x: hidden;
@@ -188,12 +189,12 @@ button.restartDB {
   transition: all ease-in-out 0.3s;
 }
 
-.chat-histories.chat-title:hover {
+.chat-histories .chat-title:hover {
   background: hsl(222, 75%, 58%);
   color: white;
   cursor: pointer;
-  transition: all ease-in-out 0.3s;
-  border-radius: 20px;
+  transition: all ease-in-out 0.1s;
+  border-radius: 10px;
 }
 
 .chat-histories .selected-chat {
@@ -245,6 +246,7 @@ button.restartDB {
 
 .wave-menu:hover {
   background: #545fe5;
+  cursor: wait;
 }
 
 .wave-menu li:nth-child(2) {
