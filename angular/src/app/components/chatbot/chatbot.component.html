@@ -1,5 +1,8 @@
 <app-error-message [errorMessage]="errorMessage"></app-error-message>
 
+<input type="file" (change)="onFileSelected($event)" />
+<button (click)="onUpload()">Upload</button>
+
 <div class="container">
   <div class="chatbot-container">
     <div class="header">

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatApiService } from 'src/app/services/chat-api.service';
+import axios from 'axios';
 
 interface Message {
   id?: string;
@@ -40,6 +41,27 @@ export class ChatbotComponent implements OnInit {
   errorMessage?: string = '';
   isLoading: boolean = false;
 
+  selectedFile: File | null = null;
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onUpload() {
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+
+      axios.post(`http://127.0.0.1:8080/upload`, formData).then(
+        (response) => {
+          console.log(response.data.message);
+        },
+        (error) => {
+          console.error('Error uploading file:', error);
+        }
+      );
+    }
+  }
   /**
    * Service responsible for interacting with the chat-related APIs.
    * This service provides functions to call APIs for handling chat data.
